@@ -1,0 +1,19 @@
+#tela {
+    width: 800px;
+    height: 600px;
+    border: 2px solid black;
+    background-color: #f0f0f0;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+#cesta {
+    width: 80px;
+    height: 40px;
+    background-color: brown;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
