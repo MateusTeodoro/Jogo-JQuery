@@ -1,4 +1,4 @@
-#tela {
+.tela {
     width: 800px;
     height: 600px;
     border: 2px solid black;
@@ -8,12 +8,27 @@
     overflow: hidden;
 }
 
-#cesta {
-    width: 80px;
-    height: 40px;
-    background-color: brown;
+.cesta {
+    width: 120px;
+    height: 80px;
     position: absolute;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
+}
+
+#cesta_img {
+    width: 100%;
+    height: auto;
+}
+
+.ovo {
+    width: 40px;
+    position: absolute;
+}
+
+#placar {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 10px;
 }
