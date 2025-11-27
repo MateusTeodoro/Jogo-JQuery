@@ -1,5 +1,11 @@
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+let pontos = 0; // Variável que conta o placar
+let tempo = 30; // Variável que controla o tempo de jogo
+let jogoAtivo = true; // Variável para determinar se o jogo terminou
+let intervaloOvos; // Variável para controlar a geração de ovos
+let intervaloTimer; // Variável para controlar o timer de jogo
+
 // Função de movimento da cesta
 $(function() // Espera o HTML ser carregado antes de ser executado
 {
@@ -12,7 +18,9 @@ $(function() // Espera o HTML ser carregado antes de ser executado
         cesta.css("left", mouseX - cesta.width() / 2); // Move a cesta e centraliza no mouse
     });
 
-    setInterval(criarOvo, 1500);    //Gera um ovo no período determinado
+    intervaloOvos = setInterval(criarOvo, 1500);    //Gera um ovo no período determinado
+
+    iniciarTimer(); // Inicia timer do jogo
 });
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -20,6 +28,8 @@ $(function() // Espera o HTML ser carregado antes de ser executado
 // Função para gerar um ovo na tela
 function criarOvo() 
 {
+    if (!jogoAtivo) return; // Bloqueia geração de ovos no final do jogo
+    
     let ovo = $('<img class="ovo" src="imagens/ovo.png">'); // Cria uma imagem de ovo
 
     let posX = Math.random() * ($('.tela').width() - 40);   // Atribui à uma variável uma posição horizontal aleatória (entre 0 e a largura da tela - largura do ovo)
@@ -72,25 +82,29 @@ function houveColisao(ovo, cesta)
 {
     // offset() - Função JQuery que retorna a posição absoluta de algo na página em pixels
 
-    let posOvo = ovo.offset();
-    let posCesta = cesta.offset();
+    let posOvo = ovo.offset(); // Pega a posição atual do ovo | Exemplo: { top: 123, left: 250 }
+    let posCesta = cesta.offset(); // Pega a posição atual da cesta
 
     // Coleta dados do ovo
-    let ovoTopo = posOvo.top;
-    let ovoEsq = posOvo.left;
-    let ovoBase = ovoTopo + ovo.height();
-    let ovoDir = ovoEsq + ovo.width();
+    let ovoTopo = posOvo.top; // Distância do topo da página até a parte de cima do ovo
+    let ovoEsq = posOvo.left; // Distância da esquerda da página até a lateral esquerda do ovo
+    let ovoBase = ovoTopo + ovo.height(); // A posição da parte de baixo do ovo
+    let ovoDir = ovoEsq + ovo.width(); // A posição da lateral direita do ovo
 
+    // Com essas quatro variáveis, têm a posição exata do retângulo do ovo
+    
     // Coleta dados da cesta
-    let cestaTopo = posCesta.top;
-    let cestaEsq = posCesta.left;
-    let cestaDir = cestaEsq + cesta.width();
+    let cestaTopo = posCesta.top; // Posição do topo da cesta
+    let cestaEsq = posCesta.left; // Lateral esquerda da cesta
+    let cestaDir = cestaEsq + cesta.width(); //Lateral direita da cesta
+
+    // Com essas três variáveis, têm a posição da boca da cesta
 
     // Verifica se horizontalmente o ovo encostou na cesta
-    let alinhadoHorizontal = ovoDir >= cestaEsq && ovoEsq <= cestaDir;
+    let alinhadoHorizontal = ovoDir >= cestaEsq && ovoEsq <= cestaDir; // A direita do ovo passou da esquerda da cesta? | A esquerda do ovo passou da direita da cesta?
 
     // Verifica se a parte de baixo do ovo chegou no topo da cesta
-    let tocouTopo = ovoBase >= cestaTopo;
+    let tocouTopo = ovoBase >= cestaTopo; // A base do ovo encostou ou passou da borda superior da cesta?
 
     // Retorna o resultado das condições
     return alinhadoHorizontal && tocouTopo;
@@ -98,40 +112,42 @@ function houveColisao(ovo, cesta)
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-let pontos = 0; // Variável que conta o placar
-
-//Função para contar e exibir os pontos
+// Função para contar e exibir os pontos
 function aumentarPontos() 
 {
-    pontos++;
-    $("#placar").text("Pontos: " + pontos);
+    pontos++; // Aumenta pontuação
+    $("#placar").text("Pontos: " + pontos); // Exibe placar atualizado
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-let tempoRestante = 30; // Variável que controla o tempo de jogo
-//Função que controla o tempo de jogo
+// Função que controla o tempo de jogo
 function iniciarTimer() 
 {
-    let timer = setInterval(function () 
+    intervaloTimer = setInterval(function () 
     {
-        tempoRestante--; // Reduz os segundos
+        tempo--; // Reduz os segundos
 
-        $("#tempo").text("Tempo: " + tempoRestante); // Mostra o tempo restante atualizado
+        $("#tempo").text("Tempo: " + tempo); // Mostra o tempo restante atualizado
 
-        if (tempoRestante <= 0) 
+        if (tempo <= 0) 
         {
-            clearInterval(timer);
-            alert("Fim de jogo! Pontuação: " + pontos);
+            fimDeJogo();
         }
     }, 1000);
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-//Chama a função após o HTML ser carregado para começar o jogo
-$(function () 
+// Função que termina o jogo, reseta os valores e mostra pontuação
+function fimDeJogo() 
 {
-    iniciarTimer();
-});
+    jogoAtivo = false; // Muda a flag para falso
 
+    clearInterval(intervaloTimer); // Reseta o timer
+    clearInterval(intervaloOvos); // Reseta ovos na tela
 
+    alert("Fim de jogo! Pontuação: " + pontos); // Mostra pontuação do jogador
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
